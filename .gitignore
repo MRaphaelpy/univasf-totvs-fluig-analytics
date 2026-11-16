@@ -1,0 +1,8 @@
+.metadata/
+.settings/
+.project
+*.zip
+*.csv
+!analytics/validacao_mensal_folha.csv
+~$*
+.~lock*
