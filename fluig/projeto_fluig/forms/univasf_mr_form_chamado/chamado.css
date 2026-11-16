@@ -1,0 +1,13 @@
+.fluig-style-guide { max-width: 100%; overflow-x: hidden; }
+.fluig-style-guide .form-control { max-width: 100%; }
+#equipamentos td { vertical-align: middle; }
+#equipamentos .col-acoes { width: 48px; text-align: center; }
+
+@media (max-width: 600px) {
+    #equipamentos thead { display: none; }
+    #equipamentos, #equipamentos tbody, #equipamentos tr, #equipamentos td { display: block; width: 100%; }
+    #equipamentos tr { border: 1px solid #ddd; border-radius: 4px; margin-bottom: 10px; padding: 6px; }
+    #equipamentos td { border: none !important; padding: 3px 0; }
+    #equipamentos .col-acoes { width: 100%; text-align: right; }
+    .radio-inline { display: inline-block; margin-left: 0 !important; margin-right: 12px; }
+}

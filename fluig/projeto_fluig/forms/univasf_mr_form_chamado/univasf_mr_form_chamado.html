@@ -1,0 +1,266 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link type="text/css" rel="stylesheet" href="/style-guide/css/fluig-style-guide.min.css"/>
+    <link type="text/css" rel="stylesheet" href="chamado.css"/>
+    <script type="text/javascript" src="/portal/resources/js/jquery/jquery.js"></script>
+    <script type="text/javascript" src="/portal/resources/js/jquery-ui/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="/portal/resources/js/mustache/mustache-min.js"></script>
+    <script type="text/javascript" src="/style-guide/js/fluig-style-guide.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="chamado.js"></script>
+</head>
+<body>
+<div class="fluig-style-guide">
+<form name="form" role="form">
+
+    <h2 class="page-header">Central de Chamados do Laboratório</h2>
+
+    <div class="panel panel-default" id="secDados">
+        <div class="panel-heading"><h3 class="panel-title">Dados gerais</h3></div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="form-group col-xs-12 col-sm-6">
+                    <label for="numChamado">Nº do chamado</label>
+                    <input type="text" class="form-control" id="numChamado" name="numChamado" readonly>
+                </div>
+                <div class="form-group col-xs-12 col-sm-6">
+                    <label for="dataAbertura">Data de abertura</label>
+                    <input type="text" class="form-control" id="dataAbertura" name="dataAbertura" readonly>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-xs-12 col-sm-6">
+                    <label for="solicitante">Solicitante</label>
+                    <input type="text" class="form-control" id="solicitante" name="solicitante" readonly>
+                </div>
+                <div class="form-group col-xs-12 col-sm-6">
+                    <label for="laboratorio">Laboratório *</label>
+                    <input type="zoom" class="form-control" id="laboratorio" name="laboratorio"
+                           data-zoom="{
+                               'displayKey':'NOME',
+                               'datasetId':'univasf_mr_ds_laboratorios',
+                               'maximumSelectionLength':'1',
+                               'placeholder':'Escolha o laboratório',
+                               'fields':[
+                                   {'field':'CODIGO','label':'Código'},
+                                   {'field':'NOME','label':'Laboratório','standard':'true'},
+                                   {'field':'BLOCO','label':'Bloco'}
+                               ]
+                           }">
+                    <input type="hidden" id="codLaboratorio" name="codLaboratorio">
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-xs-12 col-sm-6">
+                    <label for="tecnicoResponsavel">Técnico responsável</label>
+                    <input type="text" class="form-control" id="tecnicoResponsavel" name="tecnicoResponsavel" readonly>
+                    <p class="help-block">Definido pelo mecanismo de atribuição, a partir do laboratório.</p>
+                </div>
+            </div>
+            <input type="hidden" id="gwTriagem" name="gwTriagem">
+            <input type="hidden" id="gwCompra" name="gwCompra">
+            <input type="hidden" id="qtdAnexos" name="qtdAnexos">
+        </div>
+    </div>
+
+    <div class="panel panel-default" id="secChamado">
+        <div class="panel-heading"><h3 class="panel-title">O chamado</h3></div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="form-group col-xs-12 col-sm-6">
+                    <label for="tipoProblema">Tipo de problema *</label>
+                    <select class="form-control" id="tipoProblema" name="tipoProblema">
+                        <option value="">Selecione</option>
+                        <option value="hardware">Hardware</option>
+                        <option value="software">Software</option>
+                        <option value="rede">Rede / Internet</option>
+                        <option value="dano_fisico">Dano físico</option>
+                    </select>
+                    <p class="help-block">Dano físico exige pelo menos um anexo (foto) na aba Anexos.</p>
+                </div>
+                <div class="form-group col-xs-12 col-sm-6">
+                    <label>Urgência *</label>
+                    <div>
+                        <label class="radio-inline"><input type="radio" name="urgencia" value="baixa"> Baixa</label>
+                        <label class="radio-inline"><input type="radio" name="urgencia" value="media"> Média</label>
+                        <label class="radio-inline"><input type="radio" name="urgencia" value="alta"> Alta</label>
+                    </div>
+                    <p class="help-block">Urgência alta exige descrição com no mínimo 30 caracteres.</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="descricao">Descrição do problema *</label>
+                <textarea class="form-control" id="descricao" name="descricao" rows="4"></textarea>
+                <p class="help-block"><span id="contDescricao">0</span> caracteres</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default" id="secEquipamentos">
+        <div class="panel-heading"><h3 class="panel-title">Equipamentos afetados</h3></div>
+        <div class="panel-body">
+            <div class="table-responsive">
+                <table class="table table-condensed" tablename="equipamentos" id="equipamentos"
+                       noaddbutton="true" nodeletebutton="true">
+                    <thead>
+                        <tr>
+                            <td><b>Patrimônio *</b></td>
+                            <td><b>Tipo *</b></td>
+                            <td><b>Problema apresentado *</b></td>
+                            <td><b>Conferido?</b></td>
+                            <td class="col-acoes"></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="text" class="form-control mask-patrimonio" name="patrimonio" placeholder="SLG-00000" maxlength="9"></td>
+                            <td>
+                                <select class="form-control" name="tipoEquipamento">
+                                    <option value="">Selecione</option>
+                                    <option value="computador">Computador</option>
+                                    <option value="monitor">Monitor</option>
+                                    <option value="periferico">Teclado / mouse</option>
+                                    <option value="rede">Equipamento de rede</option>
+                                    <option value="outro">Outro</option>
+                                </select>
+                            </td>
+                            <td><input type="text" class="form-control" name="problemaEquipamento"></td>
+                            <td>
+                                <select class="form-control" name="conferido">
+                                    <option value=""></option>
+                                    <option value="sim">Sim</option>
+                                    <option value="nao">Não</option>
+                                </select>
+                            </td>
+                            <td class="col-acoes">
+                                <button type="button" class="btn btn-default btn-sm btn-remover" title="Remover linha"
+                                        onclick="removerEquipamento(this)"><i class="flaticon flaticon-trash icon-sm"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <button type="button" class="btn btn-default" id="btnAddEquipamento" onclick="adicionarEquipamento()">
+                <i class="flaticon flaticon-add icon-sm"></i> Incluir equipamento
+            </button>
+            <span class="help-block">Total de equipamentos: <b id="totalEquipamentos">0</b></span>
+        </div>
+    </div>
+
+    <div class="panel panel-default" id="secTriagem">
+        <div class="panel-heading"><h3 class="panel-title">Triagem</h3></div>
+        <div class="panel-body">
+            <div class="form-group">
+                <label>Encaminhamento *</label>
+                <div>
+                    <label class="radio-inline"><input type="radio" name="encaminhamento" value="atender"> Atender agora</label>
+                    <label class="radio-inline"><input type="radio" name="encaminhamento" value="peca"> Precisa de peça</label>
+                    <label class="radio-inline"><input type="radio" name="encaminhamento" value="improcedente"> Improcedente</label>
+                    <label class="radio-inline"><input type="radio" name="encaminhamento" value="devolver"> Devolver ao solicitante</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="justificativaTriagem">Justificativa da triagem</label>
+                <textarea class="form-control" id="justificativaTriagem" name="justificativaTriagem" rows="2"></textarea>
+                <p class="help-block">Obrigatória em "Improcedente" e "Devolver".</p>
+            </div>
+            <div class="row" id="grupoPeca">
+                <div class="form-group col-xs-12 col-sm-8">
+                    <label for="pecaNecessaria">Peça necessária</label>
+                    <input type="text" class="form-control" id="pecaNecessaria" name="pecaNecessaria">
+                </div>
+                <div class="form-group col-xs-12 col-sm-4">
+                    <label for="valorPecaUsd">Valor da peça em dólar (US$)</label>
+                    <input type="number" class="form-control" id="valorPecaUsd" name="valorPecaUsd" min="0" step="0.01" placeholder="0.00">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default" id="secAutorizacao">
+        <div class="panel-heading"><h3 class="panel-title">Autorização de compra</h3></div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="form-group col-xs-12 col-sm-4">
+                    <label for="cotacaoDolar">Cotação do dólar (R$)</label>
+                    <input type="text" class="form-control" id="cotacaoDolar" name="cotacaoDolar" readonly>
+                </div>
+                <div class="form-group col-xs-12 col-sm-4">
+                    <label for="dataCotacao">Data da cotação</label>
+                    <input type="text" class="form-control" id="dataCotacao" name="dataCotacao" readonly>
+                </div>
+                <div class="form-group col-xs-12 col-sm-4">
+                    <label for="valorReais">Valor em reais (R$)</label>
+                    <input type="number" class="form-control" id="valorReais" name="valorReais" min="0" step="0.01">
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-xs-12 col-sm-4">
+                    <label>Integração indisponível</label>
+                    <div>
+                        <label class="radio-inline"><input type="radio" name="integracaoIndisponivel" value="sim"> Sim</label>
+                        <label class="radio-inline"><input type="radio" name="integracaoIndisponivel" value="nao"> Não</label>
+                    </div>
+                </div>
+                <div class="form-group col-xs-12 col-sm-8">
+                    <label for="msgIntegracao">Registro da integração</label>
+                    <input type="text" class="form-control" id="msgIntegracao" name="msgIntegracao" readonly>
+                </div>
+            </div>
+            <div class="alert alert-warning" id="avisoManual" style="display:none">
+                O serviço de cotação não respondeu. Informe o valor em reais manualmente.
+            </div>
+            <div class="form-group">
+                <label>Decisão da coordenação *</label>
+                <div>
+                    <label class="radio-inline"><input type="radio" name="decisaoCoordenacao" value="autorizar"> Autorizar</label>
+                    <label class="radio-inline"><input type="radio" name="decisaoCoordenacao" value="negar"> Negar</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="justificativaDecisao">Justificativa da decisão</label>
+                <textarea class="form-control" id="justificativaDecisao" name="justificativaDecisao" rows="2"></textarea>
+                <p class="help-block">Obrigatória quando negar.</p>
+            </div>
+            <div class="form-group">
+                <label for="autorizadorData">Autorizador e data</label>
+                <input type="text" class="form-control" id="autorizadorData" name="autorizadorData" readonly>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default" id="secAtendimento">
+        <div class="panel-heading"><h3 class="panel-title">Atendimento</h3></div>
+        <div class="panel-body">
+            <div class="form-group">
+                <label for="solucao">Solução aplicada *</label>
+                <textarea class="form-control" id="solucao" name="solucao" rows="3"></textarea>
+            </div>
+            <div class="row">
+                <div class="form-group col-xs-12 col-sm-6">
+                    <label for="dataAtendimento">Data do atendimento *</label>
+                    <input type="date" class="form-control" id="dataAtendimento" name="dataAtendimento">
+                </div>
+                <div class="form-group col-xs-12 col-sm-6">
+                    <label for="tempoGasto">Tempo gasto em horas *</label>
+                    <input type="number" class="form-control" id="tempoGasto" name="tempoGasto" min="0" step="0.5">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default" id="secAjuste">
+        <div class="panel-heading"><h3 class="panel-title">Ajuste do solicitante</h3></div>
+        <div class="panel-body">
+            <div class="form-group">
+                <label for="oQueFoiAjustado">O que foi ajustado *</label>
+                <textarea class="form-control" id="oQueFoiAjustado" name="oQueFoiAjustado" rows="2"></textarea>
+            </div>
+        </div>
+    </div>
+
+</form>
+</div>
+</body>
+</html>
